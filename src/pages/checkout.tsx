@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import LayoutFragment from "../layout";
 import { Star } from "lucide-react";
 import { useHistory } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 const CheckoutPage: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const history = useHistory();
 
@@ -19,8 +21,8 @@ const CheckoutPage: React.FC = () => {
     const objetivo = localStorage.getItem("objetivo") || "";
     const idade = localStorage.getItem("idade") || "";
 
-    if(email === ''){
-      alert('Preencha o campo de email!');
+    if (email === "") {
+      alert("Preencha o campo de email!");
       return;
     }
 
@@ -39,6 +41,7 @@ const CheckoutPage: React.FC = () => {
     idade: string
   ) => {
     try {
+      setLoading(true);
       const response = await fetch("https://formspree.io/moqgqyol", {
         method: "POST",
         headers: {
@@ -54,12 +57,14 @@ const CheckoutPage: React.FC = () => {
       });
 
       if (response.ok) {
-        history.push('/finish')
+        history.push("/finish");
       } else {
-        alert('Falha, tente novamente mais tarde.')
+        alert("Falha, tente novamente mais tarde.");
       }
     } catch (error) {
-      alert('Erro ao enviar o email!');
+      alert("Erro ao enviar o email!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,8 +92,13 @@ const CheckoutPage: React.FC = () => {
       <div className="m-5">
         <button
           onClick={handleContinueClick}
-          className={'flex mt-10 gap-3 items-center justify-center text-lg text-white font-bold bg-zinc-800 p-5 w-full rounded-lg h-20'}>
-          CONTINUAR
+          disabled={loading}
+          className={
+            "flex mt-10 gap-3 items-center justify-center text-lg text-white font-bold bg-zinc-800 p-5 w-full rounded-lg h-20"
+          }
+        >
+          {loading && <ThreeDots color="white" width={50} height={50}/>}
+          {!loading && "CONTINUAR"}
         </button>
       </div>
     </LayoutFragment>
